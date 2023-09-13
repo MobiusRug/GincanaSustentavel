@@ -17,6 +17,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -45,7 +47,6 @@ public class Controller implements Initializable{
 	
 	private String[] materiais = {"Papel", "Plástico", "Vidro", "Metal"};
 	
-	//private int meta = 100;
 	
 	private ReciclaveisManager manager = new ReciclaveisManager();
 	
@@ -63,23 +64,60 @@ public class Controller implements Initializable{
 	    pontosLabel.setText("Pontos: " + manager.getPontos());
 	    progressBar.setProgress(manager.getPontos() / manager.getMeta());
 	    metaLabel.setText("Meta: " + manager.getMeta());
+	    quantidadeField.addEventFilter(KeyEvent.KEY_TYPED, this::checkInput);
+	    
+	    
+	    
+	    
 		
 	}
 	
+	public void checkInput(KeyEvent e) {
+	    if (e.getCharacter().equals(".")) {
+	        if (quantidadeField.getText().contains(".")) {
+	            e.consume();
+	        }
+	    } else if (!e.getCharacter().matches("[0-9]")) {
+	        e.consume();
+	    }
+	}
+
+	
 	public void registrar() {
 		
-		String material = materialBox.getValue();
-		Double quantidade = Double.valueOf(quantidadeField.getText());
-		manager.registrar(material, quantidade);
-		pontosLabel.setText("Pontos: " + manager.getPontos() );
-		progressBar.setProgress(manager.getPontos()/manager.getMeta());
-		if (manager.getPontos() >= manager.getMeta()) {
-			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle("Parabéns!");
-			alert.setHeaderText("Você atingiu sua meta!!");
-			alert.setContentText("\"Parabéns! Você alcançou sua meta de reciclagem! Cada esforço importa e está fazendo a diferença para um futuro mais sustentável. Não pare por aqui! Aumente sua meta e continue cuidando do nosso planeta, pois juntos podemos criar um mundo mais limpo e saudável para todos. Seu compromisso é inspirador!\"");
+		if(materialBox.getValue() != null && !quantidadeField.getText().isBlank()) {
+			String material = materialBox.getValue();
+			Double quantidade = Double.valueOf(quantidadeField.getText());
+			quantidade = Math.round(quantidade * 100.0) / 100.0;
+			manager.registrar(material, quantidade);
+			pontosLabel.setText("Pontos: " + manager.getPontos() );
+			progressBar.setProgress(manager.getPontos()/manager.getMeta());
+			Alert registro = new Alert(AlertType.INFORMATION);
+			Stage stage = (Stage) registro.getDialogPane().getScene().getWindow();
+		    stage.getIcons().add(new Image("leaf.png"));
+			registro.setHeaderText("Dados de reciclagem registrados com sucesso!");
+			registro.show();
+			
+			if (manager.getPontos() >= manager.getMeta()) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
+			    stageAlert.getIcons().add(new Image("leaf.png"));
+				alert.setTitle("Parabéns!");
+				alert.setHeaderText("Você atingiu sua meta!!");
+				alert.setContentText("\"Parabéns! Você alcançou sua meta de reciclagem! Cada esforço importa e está fazendo a diferença para um futuro mais sustentável. Não pare por aqui! Aumente sua meta e continue cuidando do nosso planeta, pois juntos podemos criar um mundo mais limpo e saudável para todos. Seu compromisso é inspirador!\"");
+				alert.show();
+			}
+			materialBox.setValue(null);
+			quantidadeField.setText(null);
+		}else {
+			Alert alert = new Alert(AlertType.WARNING);
+			Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			stage.getIcons().add(new Image("leaf.png"));
+			alert.setHeaderText("Aviso!");
+			alert.setContentText("Preencha todos os campos!");
 			alert.show();
 		}
+		
 		
 	}
 	
@@ -87,6 +125,8 @@ public class Controller implements Initializable{
 		
 		String status = manager.status();
 		Alert alert = new Alert(AlertType.INFORMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+	    stage.getIcons().add(new Image("leaf.png"));
 		alert.setTitle("Status da Reciclagem");
 		alert.setHeaderText(null);
 		alert.setContentText(status);
@@ -103,6 +143,7 @@ public class Controller implements Initializable{
 		MetaController metaController = loader.getController();
 		metaController.setParentController(this);
 		Stage dialogoStage = new Stage();
+		dialogoStage.getIcons().add(new Image("leaf.png"));
 		dialogoStage.initModality(Modality.APPLICATION_MODAL);
 		dialogoStage.setTitle("Atualizar Meta");
 		dialogoStage.setScene(new Scene(root));
@@ -120,7 +161,8 @@ public class Controller implements Initializable{
 	
 	public void reset() {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
-		//alert.showAndWait();
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+	    stage.getIcons().add(new Image("leaf.png"));
 		alert.setTitle(null);
 		alert.setHeaderText("Você tem certeza que deseja apagar todos os dados de reciclagem?");
 		
@@ -129,9 +171,11 @@ public class Controller implements Initializable{
 			pontosLabel.setText("Pontos: " + manager.getPontos());
 		    progressBar.setProgress(manager.getPontos() / manager.getMeta());
 		    Alert sucesso = new Alert(AlertType.INFORMATION);
+		    Stage stageSucesso = (Stage) sucesso.getDialogPane().getScene().getWindow();
+	        stageSucesso.getIcons().add(new Image("leaf.png"));
 		    sucesso.setTitle(null);
 		    sucesso.setHeaderText("Dados apagados com sucesso!");
-		    sucesso.show();
+		    sucesso.showAndWait();
 		   
 		}
 

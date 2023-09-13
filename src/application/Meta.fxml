@@ -17,7 +17,7 @@
                   <Insets bottom="10.0" />
                </VBox.margin>
             </Label>
-            <TextField fx:id="metaField" text="0">
+            <TextField fx:id="metaField" onKeyPressed="#checkInput" onKeyTyped="#checkInput" onMouseClicked="#checkInput" text="0">
                <VBox.margin>
                   <Insets bottom="10.0" />
                </VBox.margin>

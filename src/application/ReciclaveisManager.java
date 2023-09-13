@@ -18,27 +18,20 @@ public class ReciclaveisManager {
 	public void registrar(String material, Double quantidade) {
 		reciclaveis.put(material, reciclaveis.getOrDefault(material, (double) 0) + quantidade);
 		pontos += quantidade;
+		pontos = Math.round(pontos * 100.0) / 100.0;
 		salvarDados();
 	}
 
-	/*
-	 * public void printMaterials() { for (Entry<String, Double> entry :
-	 * reciclaveis.entrySet()) { String key = entry.getKey(); Double value =
-	 * entry.getValue(); System.out.println("Material: " + key + ", Quantidade: " +
-	 * value); } }
-	 */
 
 	public String status() {
 		StringBuilder status = new StringBuilder("");
 		for (Map.Entry<String, Double> entry : reciclaveis.entrySet()) {
-			status.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+			status.append(entry.getKey()).append(": ").append(entry.getValue()).append(" kg").append("\n");
 		}
 		return status.toString();
 	}
 
-	public Double getPontos() {
-		return this.pontos;
-	}
+
 
 	public void salvarDados() {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(DATA_FILE))) {
@@ -87,6 +80,10 @@ public class ReciclaveisManager {
 		reciclaveis.clear();
 		pontos = 0.0;
 		salvarDados();
+	}
+	
+	public Double getPontos() {
+		return this.pontos;
 	}
 	
 	public int getMeta() {

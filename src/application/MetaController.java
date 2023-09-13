@@ -1,11 +1,16 @@
 package application;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-public class MetaController {
+public class MetaController implements Initializable {
 
 	@FXML
 	TextField metaField;
@@ -25,25 +30,32 @@ public class MetaController {
 	public void definirMeta() {
 
 		try {
-			// Attempt to parse the text from metaField into an Integer
 			int meta = Integer.valueOf(metaField.getText());
 			parentController.setMeta(meta);
 
-			// Close the stage
 			Stage stage = (Stage) metaOK.getScene().getWindow();
 			stage.close();
 
 		} catch (NumberFormatException e) {
-			// Handle the case where the user entered a non-integer value
-			// You can display an error message or take other appropriate action here
-			e.printStackTrace(); // For debugging purposes
-			// Or some other appropriate default value
+			e.printStackTrace(); 
 		}
 	}
 
 	public void cancela() {
 		Stage stage = (Stage) metaCancela.getScene().getWindow();
 		stage.close();
+	}
+	
+	public void checkInput(KeyEvent e) {
+		if(!e.getCharacter().matches("[0-9]*")) {
+			e.consume();
+		}
+	}
+
+	@Override
+	public void initialize(URL arg0, ResourceBundle arg1) {
+		metaField.addEventFilter(KeyEvent.KEY_TYPED, this::checkInput);
+		
 	}
 
 
